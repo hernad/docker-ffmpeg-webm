@@ -1,6 +1,8 @@
 FROM debian:wheezy
 
-MAINTAINER Ozzy Johnson <docker@ozzy.io>
+MAINTAINER hernad@bring.out.ba
+
+#thank you Ozzy Johnson <docker@ozzy.io>
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -56,7 +58,7 @@ RUN git clone git://git.videolan.org/x264.git \
     && rm -rf /tmp/x264
 
 ## libopus
-RUN git clone git://git.opus-codec.org/opus.git \
+RUN true || ( git clone git://git.opus-codec.org/opus.git \
     && cd opus \
     && ./autogen.sh \
     && ./configure --disable-shared \
@@ -64,7 +66,7 @@ RUN git clone git://git.opus-codec.org/opus.git \
     && make install \
     && make distclean \
     && cd /tmp \
-    && rm -rf /tmp/opus
+    && rm -rf /tmp/opus )
 
 ## libvpx
 RUN git clone https://chromium.googlesource.com/webm/libvpx \
@@ -85,7 +87,6 @@ RUN git clone git://source.ffmpeg.org/ffmpeg.git \
         --extra-libs=-ldl \
         --enable-gpl \
         --enable-libass \
-        --enable-libopus \
         --enable-libtheora \
         --enable-libvorbis \
         --enable-libvpx \
@@ -96,17 +97,16 @@ RUN git clone git://source.ffmpeg.org/ffmpeg.git \
     && cd /tmp \
     && rm -rf /tmp/ffmpeg
 
-# Access to second stream for consumption by ffserver or similar.
-EXPOSE 8888
 
 # Wrapper for ffmpeg to keep the container launch simple.
 ADD mp4_2_webm.sh /mp4_2_webm.sh
-RUN chmod +x mp4_2_webm.sh
+RUN chmod +x /mp4_2_webm.sh
 # A volume for video output.
 ONBUILD VOLUME ["/data"]
 
 # Prepare to run.
 WORKDIR /data
 
-# Launch into the container executable style.
-ENTRYPOINT /mp4_webm.sh 
+RUN apt-get -y rsync psprocs vim
+
+CMD /mp4_2_webm.sh 
