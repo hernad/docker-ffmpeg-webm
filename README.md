@@ -3,4 +3,7 @@
 
 ## Run
 
-    docker run -v $(pwd)/videos:/data ffmpeg-webm
+    MAX_CONVERSIONS=5 ./run_conversion_videos.sh
+
+
+

@@ -98,6 +98,8 @@ RUN git clone git://source.ffmpeg.org/ffmpeg.git \
     && rm -rf /tmp/ffmpeg
 
 
+RUN apt-get update -y && apt-get -y install rsync procps vim
+
 # Wrapper for ffmpeg to keep the container launch simple.
 ADD mp4_2_webm.sh /mp4_2_webm.sh
 RUN chmod +x /mp4_2_webm.sh
@@ -106,7 +108,5 @@ ONBUILD VOLUME ["/data"]
 
 # Prepare to run.
 WORKDIR /data
-
-RUN apt-get -y rsync psprocs vim
 
 CMD /mp4_2_webm.sh 
