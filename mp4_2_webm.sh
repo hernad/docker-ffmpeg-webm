@@ -6,7 +6,7 @@ echo "max ffmpeg processes (MAX_CONVERSIONS) = $MAX_CONVERSIONS"
 
 ffmpeg_convert() {
   
- ffmpeg -y -i $1 -codec:v libvpx -quality good -cpu-used 0 -b:v 500k -qmin 10 -qmax 42 -maxrate 500k -bufsize 1000k -threads 4 \
+ ffmpeg -loglevel panic -y -i $1 -codec:v libvpx -quality good -cpu-used 0 -b:v 500k -qmin 10 -qmax 42 -maxrate 500k -bufsize 1000k -threads 4 \
      -vf scale=-1:1080 -codec:a libvorbis -b:a 128k $2 
  echo ffmpeg return: $
  echo rm $1
@@ -15,16 +15,25 @@ ffmpeg_convert() {
 
 find_mp4_files() {
    cd /data/in
-   MP4_FILES=`find $INPUT_DIR -type f -name "*.MP4" -o -type f -name "*.mp4" | sed -e 's/\.\///' `
+
+   # add ; separator
+   MP4_FILES=`find $INPUT_DIR -type f -name "*.MP4" -o -type f -name "*.mp4" | sed -e 's/.*/&;/' | sed -e 's/[ ]/\\\ /g' | sed -e 's/\.\///'`
+
+   # zagrade () -> \(\)
+   MP4_FILES=`echo $MP4_FILES | sed -e 's/[(]/\\\(/g' | sed -e 's/[)]/\\\)/g'`
+
+   echo $MP4_FILES 
 }
 
 
 move_convert_mp4() {
     # FIRST_MP4=video/a.mp4, but  out/video/a.mp4 DOES NOT EXISTS
 
-    dirname=$(dirname "$1") 
-    filename=$(echo $1 | sed -e 's/.MP4$//')
-    filename=$(echo $filename | sed -e 's/.mp4$//')
+    echo "ulazni fajl: $1"
+    dirname=$(dirname "$1" | sed -e 's/^ //') 
+
+    filename=$(echo "$1" | sed -e 's/.MP4$//')
+    filename=$(echo "$filename" | sed -e 's/.mp4$//')
     CMD="touch /data/in/$1.processing"
     CMD="$CMD && ffmpeg_convert /data/in/$1 /data/in/$filename.webm"
     CMD="$CMD && rm /data/in/$1.processing"
@@ -45,14 +54,26 @@ find_mp4_files
 let cnt=0
 
 echo $MP4_FILES
+IFS=$";"
 for f in $MP4_FILES 
 do
 
-  echo "mp4 file: $f" 
-  if [ ! -f /data/in/$f.processing ]
+  # remove ; separator, remove spaces on begin, end
+  f=`echo $f | sed -e 's/;$//' | sed -e 's/^[ ]//' | sed -e 's/[ ]$//'`
+
+  echo ">>>>>>>>> mp4 file: $f" 
+
+  file_in_no_esc_processing=`echo /data/in/$f.processing | sed -e 's/\\\//g'`
+
+  if [ ! -f "$file_in_no_esc_processing" ]
   then
-    move_convert_mp4 $f &
+    echo "processing ne postoji: $file_in_no_esc_processing"
+    (move_convert_mp4 "$f" &)
+    echo "INPUT FILE: $f"
     let cnt=cnt+1
+    echo count=$cnt
+  else
+    echo "$file_in_no_esc_processing !"
   fi
 
  if [ $cnt -gt $MAX_CONVERSIONS ] ; then
@@ -60,4 +81,3 @@ do
  fi
 
 done
-
