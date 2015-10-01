@@ -88,11 +88,24 @@ while true; do
 
   NUM_FFMPEG=`ps aux | grep -c '[f]fmpeg'`
 
+
   if [ $NUM_FFMPEG -eq 0 ] ; then
-     echo "no more ffmpeg processes, bye bye ..."
+     echo "no more ffmpeg processes ..."
+
+     while true; do
+        NUM_RSYNC=`ps aux | grep -c '[r]sync'`
+        if [ $NUM_RSYNC -eq 0 ] ; then
+           break
+           sleep 60
+        fi
+     done
+
+     echo "nothing left, bye bye ..."
      exit
+
   else
      echo "$NUM_FFMPEG ffmpeg conversions in process ..."
-     sleep 60
+     sleep 90
   fi
+
 done
