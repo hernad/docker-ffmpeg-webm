@@ -78,7 +78,7 @@ do
 
  if [ $cnt -gt $MAX_CONVERSIONS ] ; then
     echo "max conversions limit: $MAX_CONVERSIONS reached !" 
-    return
+    break
  fi
 
 done
