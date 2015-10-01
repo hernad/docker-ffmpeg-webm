@@ -1,6 +1,15 @@
 # docker ffmpeg-webm
 
 
+## build
+
+    ./build.sh
+
+
+build and push to hernad/ffmpeg-webm
+
+    ./build.sh push hernad
+
 ## Run
 
 
