@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-MAX_CONVERSIONS=${MAX_CONVERSIONS:-1}
+MAX_CONVERSIONS=${MAX_CONVERSIONS:-5}
 
 videos_dir=${1:-$(pwd)/videos}
 
@@ -16,4 +16,4 @@ docker run \
    -e MAX_CONVERSIONS=$MAX_CONVERSIONS \
    -v $videos_dir:/data \
    -ti \
-   hernad/ffmpeg-webm /bin/bash
+   hernad/ffmpeg-webm $1

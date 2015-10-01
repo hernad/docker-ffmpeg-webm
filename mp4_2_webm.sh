@@ -51,7 +51,7 @@ cd /data
 
 find_mp4_files
 
-let cnt=0
+let cnt=1
 
 echo $MP4_FILES
 IFS=$";"
@@ -88,7 +88,7 @@ while true; do
   NUM_FFMPEG=`ps aux | grep -c '[f]fmpeg'`
 
   if [ $NUM_FFMPEG -eq 0 ] ; then
-     echo nema vise ffmpeg procesa
+     echo "no more ffmpeg processes, bye bye ..."
      exit
   else
      echo "$NUM_FFMPEG ffmpeg conversions in process ..."
