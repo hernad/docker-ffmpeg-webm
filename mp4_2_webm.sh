@@ -81,3 +81,17 @@ do
  fi
 
 done
+
+
+while true; do
+
+  NUM_FFMPEG=`ps aux | grep -c '[f]fmpeg'`
+
+  if [ $NUM_FFMPEG -eq 0 ] ; then
+     echo nema vise ffmpeg procesa
+     exit
+  else
+     echo "$NUM_FFMPEG ffmpeg conversions in process ..."
+     sleep 60
+  fi
+done
