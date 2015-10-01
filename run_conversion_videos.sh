@@ -16,4 +16,4 @@ docker run \
    -e MAX_CONVERSIONS=$MAX_CONVERSIONS \
    -v $videos_dir:/data \
    -ti \
-   hernad/ffmpeg-webm $1
+   hernad/ffmpeg-webm $2
