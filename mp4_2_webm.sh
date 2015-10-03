@@ -83,6 +83,8 @@ do
 
 done
 
+echo "sleep 20 sec ..."
+sleep 20
 
 while true; do
 
